@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  var ATTRS = ['on', 'off', 'size', 'onstyle', 'offstyle', 'style', 'width', 'height'];
+  
   angular.module('ui.toggle', [])
 
     .value('$toggleSuppressError', false)
@@ -55,12 +57,10 @@
             ngModelCtrl = {$setViewValue: angular.noop};
 
           // Configuration attributes
-          angular.forEach(['on', 'off', 'size', 'onstyle', 'offstyle', 'style'], function (key, index) {
-            //$log.info(key + ':' + $attrs[key]);
+          angular.forEach(ATTRS, function (key, index) {
             self[key] = angular.isDefined($attrs[key]) ?
-              (index < 6 ? $interpolate($attrs[key])($scope.$parent) : $scope.$parent.$eval($attrs[key])) :
+              (index < 8 ? $interpolate($attrs[key])($scope.$parent) : $scope.$parent.$eval($attrs[key])) :
               toggleConfig[key];
-            //$log.info(key + ':' + self[key]);
           });
 
           this.init = function (ngModelCtrl_) {
@@ -82,22 +82,26 @@
             angular.element(labels[0]).html(self.on);
             angular.element(labels[1]).html(self.off);
             var spans = self.element.find('span');
-            var wrapperComputedWidth = self.width || Math.max(labels[0].offsetWidth, labels[1].offsetWidth) +
+            var wrapperComputedWidth = Math.max(labels[0].offsetWidth, labels[1].offsetWidth) +
               (spans[0].offsetWidth / 2);
-            var wrapperComputedHeight = self.height || Math.max(labels[0].offsetHeight, labels[1].offsetHeight);
+            var wrapperComputedHeight = Math.max(labels[0].offsetHeight, labels[1].offsetHeight);
 
             var divs = self.element.find('div');
             var wrapperWidth = divs[0].offsetWidth;
             var wrapperHeight = divs[1].offsetHeight;
 
             $scope.wrapperStyle = {};
-            if (wrapperWidth < wrapperComputedWidth) {
+            if (self.width) {
+              $scope.wrapperStyle.width = self.width;
+            } else if (wrapperWidth < wrapperComputedWidth) {
               $scope.wrapperStyle.width = wrapperComputedWidth + 'px';
             } else {
               $scope.wrapperStyle.width = wrapperWidth + 'px';
             }
 
-            if (wrapperHeight < wrapperComputedHeight && self.size !== 'btn-xs' && self.size !== 'btn-sm') {
+            if (self.height) {
+              $scope.wrapperStyle.height = self.height;
+            } else if (wrapperHeight < wrapperComputedHeight && self.size !== 'btn-xs' && self.size !== 'btn-sm') {
               $scope.wrapperStyle.height = wrapperComputedHeight + 'px';
             } else {
               $scope.wrapperStyle.height = wrapperHeight + 'px';
@@ -136,7 +140,7 @@
             });
           });
 
-          angular.forEach(['on', 'off', 'size', 'onstyle', 'offstyle', 'style'], function (key) {
+          angular.forEach(ATTRS, function (key) {
             $attrs.$observe(key, function (val) {
               if (self[key] !== val) {
                 self[key] = val;
@@ -163,10 +167,15 @@
           require: ['toggle', 'ngModel'],
           controller: 'ToggleController',
           controllerAs: 'toggle',
-          link: function (scope, element, attrs, ctrls) {
-            var toggleCtrl = ctrls[0], ngModelCtrl = ctrls[1];
-            toggleCtrl.element = element;
-            toggleCtrl.init(ngModelCtrl);
+          compile: function (element, attrs, transclude) {
+            return {
+              pre: function (scope, element, attrs, ctrls) {
+                var toggleCtrl = ctrls[0], ngModelCtrl = ctrls[1];
+                toggleCtrl.element = element;
+                toggleCtrl.init(ngModelCtrl);
+              },
+              post: function () {}
+            }
           }
         };
       }

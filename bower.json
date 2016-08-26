@@ -1,6 +1,6 @@
 {
-  "name": "angular-bootstrap-toggle",
-  "description": "AngularJS version of Bootstrap Toggle",
+  "name": "angular-bootstrap-toggle-aehrc",
+  "description": "Fork of AngularJS version of Bootstrap Toggle",
   "version": "0.1.2",
   "keywords": [
     "angular",
@@ -11,6 +11,10 @@
     {
       "name": "Tony Wang",
       "email": "ziscloud@gmail.com"
+    },
+    {
+      "name": "Michael Lawley",
+      "email": "michael.lawley@csiro.au"
     }
   ],
   "main": [
